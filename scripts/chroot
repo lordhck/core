@@ -84,10 +84,12 @@ msg "Entering Core chroot"
 
 CHROOT_BIN="$(command -v chroot)" || die "chroot command not found"
 
-env -i \
-    HOME=/root TERM="${TERM:-linux}" \
-    PATH=/usr/sbin:/usr/bin:/sbin:/bin \
-    "$CHROOT_BIN" "$ROOT" /bin/sh -c '
-    export PS1="(chroot) # "
+# Not a login shell: it would re-read /etc/profile and drop the
+# (chroot) marker that shows you are not on the host. The hostname
+# comes from the rootfs, since \h would show the host's name.
+env -i HOME=/root TERM="${TERM:-linux}" "$CHROOT_BIN" "$ROOT" /bin/sh -c '
+    . /etc/profile
+    cd
+    export PS1="(chroot) \u@$(cat /etc/hostname):\w# "
     exec /bin/sh -i
 '
