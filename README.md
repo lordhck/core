@@ -7,14 +7,13 @@ A minimal Linux distribution built from the ground up.
 ## Build
 
 ```bash
-docker compose build
-docker compose run --rm core-build ./corefs/build.sh
+make
 ```
 
 ## Chroot
 
 ```bash
-sudo ./scripts/chroot
+make chroot
 ```
 
 ## Status
