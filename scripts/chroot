@@ -7,9 +7,7 @@ PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 
 ROOT="${ROOT:-$PROJECT_DIR/output/rootfs}"
 
-msg()  { printf '[INFO] %s\n' "$*"; }
-warn() { printf '[WARN] %s\n' "$*" >&2; }
-die()  { printf '[FAIL] %s\n' "$*" >&2; exit 1; }
+source "$PROJECT_DIR/corefs/lib/common.sh"
 
 [[ $EUID -eq 0 ]] || die "must be run as root"
 [[ -d "$ROOT" ]] || die "rootfs directory not found"
