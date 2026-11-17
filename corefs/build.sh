@@ -12,6 +12,7 @@ source "$SCRIPT_DIR/lib/filesystem.sh"
 source "$SCRIPT_DIR/lib/symlinks.sh"
 source "$SCRIPT_DIR/lib/config.sh"
 source "$SCRIPT_DIR/lib/packages.sh"
+source "$SCRIPT_DIR/lib/kernel.sh"
 source "$SCRIPT_DIR/lib/verify.sh"
 
 main() {
@@ -32,6 +33,7 @@ main() {
     build_filesystem
     build_symlinks
     build_packages
+    build_kernel
     build_config
     verify_elf
 
