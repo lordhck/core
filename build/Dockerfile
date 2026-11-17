@@ -3,16 +3,8 @@ FROM alpine:${ALPINE_VERSION}
 
 RUN apk add --no-cache \
 	bash \
-	build-base \
-	binutils \
-	coreutils \
-	findutils \
-	git \
-	linux-headers \
-	musl-dev \
 	pax-utils \
-	tar \
-	xz
+	tar
 
 WORKDIR /src
 
