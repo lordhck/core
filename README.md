@@ -4,6 +4,12 @@ A minimal Linux distribution built from the ground up.
 
 **Philosophy:** Keep it simple.
 
+## Requirements
+
+- Docker with Compose
+- make
+- QEMU (`qemu-system-x86_64`) with KVM access, for `make run`
+
 ## Build
 
 ```bash
@@ -26,7 +32,9 @@ make chroot
 
 ## Status
 
-Currently in the bootstrap phase. Alpine is temporarily used as a build environment and binary package source.
+Currently in the bootstrap phase. Alpine is temporarily used as a build environment and as the source of binary packages and the kernel.
+
+Core boots in QEMU to a login prompt.
 
 The long-term goal is a self-hosting Linux distribution.
 
@@ -38,3 +46,7 @@ The long-term goal is a self-hosting Linux distribution.
 - [ ] Package manager
 - [ ] Self-hosting
 - [ ] Installable distribution
+
+## License
+
+MIT. See [LICENSE](LICENSE).
