@@ -1,0 +1,12 @@
+service:
+  core-build:
+    build:
+      context: .
+      dockerfile: build/Dockerfile
+    image: core-build
+    working_dir: /src
+    volumes:
+      - .:/src
+    stdin_open: true
+    tty: true
+    command: bash
