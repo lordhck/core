@@ -36,7 +36,7 @@ users:x:100:
 EOT
 
     write_file "$ROOT/etc/shadow" 600 <<'EOT'
-root:!:0:0:99999:7:::
+root::0:0:99999:7:::
 EOT
 
     write_file "$ROOT/etc/profile" <<'EOT'
