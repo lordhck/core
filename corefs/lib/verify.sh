@@ -8,7 +8,7 @@ verify_elf() {
 
     command -v scanelf >/dev/null || die "scanelf not found"
 
-    msg "Checking ELF dependencies"
+    status "Checking ELF dependencies"
 
     while IFS=';' read -r file interp needed; do
         if [[ -n "$interp" && ! -e "$ROOT$interp" ]]; then
@@ -26,5 +26,5 @@ verify_elf() {
 
     ((missing == 0)) || die "unresolved ELF dependencies"
 
-    msg "ELF dependencies resolved"
+    ok
 }

@@ -4,7 +4,10 @@ PACKAGE_LIST="$PROJECT_DIR/packages/base"
 PACKAGE_CACHE="$PROJECT_DIR/output/packages"
 
 fetch_packages() {
-    local -a packages=()
+    local -a packages=() files=()
+    local out
+
+    status "Fetching packages"
 
     [[ -f "$PACKAGE_LIST" ]] || die "package list not found"
 
@@ -18,12 +21,12 @@ fetch_packages() {
     find "$PACKAGE_CACHE" -maxdepth 1 -type f -name '*.apk' -delete \
         || die "failed to clean package cache"
 
-    msg "Fetching packages"
+    out="$(apk update 2>&1)" || die "failed to update package indexes" "$out"
+    out="$(apk fetch --recursive --output "$PACKAGE_CACHE" "${packages[@]}" 2>&1)" \
+        || die "failed to fetch packages" "$out"
 
-    apk update || die "failed to update package indexes"
-
-    apk fetch --recursive --output "$PACKAGE_CACHE" "${packages[@]}" \
-        || die "failed to fetch packages"
+    files=("$PACKAGE_CACHE"/*.apk)
+    ok "${#files[@]} packages"
 }
 
 # apk-tools 2.x has no 'apk extract'; a v2 .apk is a concatenated
@@ -32,12 +35,10 @@ fetch_packages() {
 extract_packages() {
     local package
 
-    msg "Extracting packages"
+    status "Extracting packages"
 
     for package in "$PACKAGE_CACHE"/*.apk; do
         [[ -f "$package" ]] || die "no packages found"
-
-        msg "Extracting $(basename "$package")"
 
         tar -xzf "$package" -C "$ROOT" \
             --numeric-owner \
@@ -49,23 +50,25 @@ extract_packages() {
             --exclude='.pre-*' \
             --exclude='.post-*' \
             --exclude='.trigger' \
-            || die "failed to extract package: $package"
+            || die "failed to extract $(basename "$package")"
     done
+
+    ok
 }
 
 # Alpine creates the applet links in busybox's post-install script,
 # which extract_packages skips. Recreate them as relative links.
 install_busybox_applets() {
     local -a applets=()
-    local applet dir target count=0
+    local applet dir target
+
+    status "Installing busybox applets"
 
     [[ -x "$ROOT/usr/bin/busybox" ]] || die "busybox binary not found"
 
     mapfile -t applets < <(chroot "$ROOT" /usr/bin/busybox --list-full) \
         || die "failed to list busybox applets"
     ((${#applets[@]})) || die "busybox reported no applets"
-
-    msg "Installing busybox applets"
 
     for applet in "${applets[@]}"; do
         case "$applet" in
@@ -79,16 +82,13 @@ install_busybox_applets() {
         [[ -e "$ROOT/$dir/$applet" || -L "$ROOT/$dir/$applet" ]] && continue
 
         lns "$target" "$ROOT/$dir/$applet"
-        count=$((count + 1))
     done
 
-    msg "Linked $count busybox applets"
+    ok "${#applets[@]} applets"
 }
 
 build_packages() {
     fetch_packages
     extract_packages
     install_busybox_applets
-
-    msg "Packages installed"
 }

@@ -3,7 +3,7 @@
 build_filesystem() {
     local dir
 
-    msg "Creating filesystem"
+    status "Creating filesystem"
 
     for dir in boot dev etc home mnt opt proc run srv sys \
                usr/{bin,include,lib,libexec,sbin,share} \
@@ -16,5 +16,5 @@ build_filesystem() {
     mkd "$ROOT/var/tmp"  1777
     mkd "$ROOT/run/lock"
 
-    msg "Filesystem created"
+    ok
 }

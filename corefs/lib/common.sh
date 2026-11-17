@@ -1,8 +1,51 @@
 #!/usr/bin/env bash
 
-msg()  { printf '[INFO] %s\n' "$*"; }
-warn() { printf '[WARN] %s\n' "$*" >&2; }
-die()  { printf '[FAIL] %s\n' "$*" >&2; exit 1; }
+if [[ -t 1 ]]; then
+    RED=$'\e[31m' GREEN=$'\e[32m' YELLOW=$'\e[33m' BLUE=$'\e[34m'
+    DIM=$'\e[2m' RESET=$'\e[0m' CR=$'\r'
+else
+    RED='' GREEN='' YELLOW='' BLUE='' DIM='' RESET='' CR=''
+fi
+
+STEP=''
+
+msg() { printf '[%sINFO%s] %s\n' "$BLUE" "$RESET" "$*"; }
+
+# The pending line is redrawn by ok/die. Without a terminal it is
+# skipped, so logs only get the final result.
+status() {
+    STEP="$*"
+    [[ -n "$CR" ]] && printf '[    ] %s' "$STEP"
+    return 0
+}
+
+ok() {
+    printf '%s[%s OK %s] %s' "$CR" "$GREEN" "$RESET" "$STEP"
+    [[ -n "${1:-}" ]] && printf ' %s(%s)%s' "$DIM" "$1" "$RESET"
+    printf '\n'
+    STEP=''
+}
+
+warn() {
+    [[ -n "$STEP" && -n "$CR" ]] && printf '\r\e[K'
+    printf '[%sWARN%s] %s\n' "$YELLOW" "$RESET" "$*" >&2
+    [[ -n "$STEP" && -n "$CR" ]] && printf '[    ] %s' "$STEP"
+    return 0
+}
+
+# Inside a step, the step is the title and every argument a detail line.
+die() {
+    local title="${STEP:-${1:-}}" line
+
+    [[ -n "$STEP" ]] || shift
+    printf '%s[%sFAIL%s] %s\n' "$CR" "$RED" "$RESET" "$title" >&2
+
+    while IFS= read -r line; do
+        [[ -n "$line" ]] && printf '\t%s-> %s%s\n' "$DIM" "$line" "$RESET" >&2
+    done < <(printf '%s\n' "$@")
+
+    exit 1
+}
 
 mkd() {
     local dir="$1" mode="${2:-755}"

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 build_config() {
-    msg "Writing system configuration"
+    status "Writing system configuration"
 
     write_file "$ROOT/etc/os-release" <<'EOT'
 NAME="Core Linux"
@@ -39,5 +39,5 @@ EOT
 root:!:0:0:99999:7:::
 EOT
 
-    msg "System configuration created"
+    ok
 }

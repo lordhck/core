@@ -27,8 +27,7 @@ main() {
         mountpoint -q "$ROOT/$dir" && die "/$dir is mounted, exit the chroot first"
     done
 
-    msg "Building Core rootfs"
-    msg "Target: $ROOT"
+    msg "Building Core rootfs in $ROOT"
 
     build_filesystem
     build_symlinks
@@ -36,7 +35,7 @@ main() {
     build_config
     verify_elf
 
-    msg "Core rootfs build complete"
+    msg "Core rootfs built in ${SECONDS}s"
 }
 
 main "$@"

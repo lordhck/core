@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 build_symlinks() {
-    msg "Creating symlinks"
+    status "Creating symlinks"
 
     lns usr/bin  "$ROOT/bin"
     lns usr/sbin "$ROOT/sbin"
@@ -12,5 +12,5 @@ build_symlinks() {
 
     lns /proc/self/mounts "$ROOT/etc/mtab"
 
-    msg "Symlinks created"
+    ok
 }
