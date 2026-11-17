@@ -39,5 +39,25 @@ EOT
 root:!:0:0:99999:7:::
 EOT
 
+    write_file "$ROOT/etc/profile" <<'EOT'
+export PATH=/usr/sbin:/usr/bin
+umask 022
+PS1='\u@\h:\w\$ '
+EOT
+
+    write_file "$ROOT/etc/shells" <<'EOT'
+/bin/sh
+/bin/ash
+EOT
+
+    write_file "$ROOT/etc/issue" <<'EOT'
+Core Linux 0.1.0 \n \l
+
+EOT
+
+    write_file "$ROOT/etc/motd" <<'EOT'
+Welcome to Core Linux.
+EOT
+
     ok
 }
