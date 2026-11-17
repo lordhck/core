@@ -1,3 +1,5 @@
 /output/
 /.cache/
 *.log
+/roadmap.md
+/.vscode/
