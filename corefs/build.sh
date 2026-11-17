@@ -12,6 +12,7 @@ source "$SCRIPT_DIR/lib/filesystem.sh"
 source "$SCRIPT_DIR/lib/symlinks.sh"
 source "$SCRIPT_DIR/lib/config.sh"
 source "$SCRIPT_DIR/lib/packages.sh"
+source "$SCRIPT_DIR/lib/verify.sh"
 
 main() {
     [[ -n "$ROOT" && "$ROOT" != "/" ]] || die "invalid rootfs path"
@@ -20,6 +21,12 @@ main() {
     ROOT="$(cd "$ROOT" && pwd -P)"
     [[ "$ROOT" != "/" ]] || die "invalid rootfs path"
 
+    # An open chroot leaves host dirs mounted here; chmod would hit the host.
+    local dir
+    for dir in dev proc sys run; do
+        mountpoint -q "$ROOT/$dir" && die "/$dir is mounted, exit the chroot first"
+    done
+
     msg "Building Core rootfs"
     msg "Target: $ROOT"
 
@@ -27,6 +34,7 @@ main() {
     build_symlinks
     build_packages
     build_config
+    verify_elf
 
     msg "Core rootfs build complete"
 }

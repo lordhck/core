@@ -10,6 +10,7 @@ RUN apk add --no-cache \
 	git \
 	linux-headers \
 	musl-dev \
+	pax-utils \
 	tar \
 	xz
 
