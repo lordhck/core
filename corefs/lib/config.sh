@@ -39,6 +39,19 @@ EOT
 root::0:0:99999:7:::
 EOT
 
+    write_file "$ROOT/etc/fstab" <<'EOT'
+proc     /proc proc     defaults 0 0
+sysfs    /sys  sysfs    defaults 0 0
+devtmpfs /dev  devtmpfs defaults 0 0
+tmpfs    /run  tmpfs    defaults 0 0
+EOT
+
+    write_file "$ROOT/etc/inittab" <<'EOT'
+::sysinit:/bin/mount -a
+::sysinit:/bin/hostname -F /etc/hostname
+ttyS0::respawn:/sbin/getty -L 115200 ttyS0 vt100
+EOT
+
     write_file "$ROOT/etc/profile" <<'EOT'
 export PATH=/usr/sbin:/usr/bin
 umask 022
