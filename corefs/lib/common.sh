@@ -5,17 +5,17 @@ warn() { printf '[WARN] %s\n' "$*" >&2; }
 die()  { printf '[FAIL] %s\n' "$*" >&2; exit 1; }
 
 mkd() {
-	local dir="$1" mode="${2:-755}"
+    local dir="$1" mode="${2:-755}"
 
-	mkdir -p "$dir" || die "failed to create '$dir'"
-	chmod "$mode" "$dir" || die "failed ro chmod '$dir'"
+    mkdir -p "$dir" || die "failed to create '$dir'"
+    chmod "$mode" "$dir" || die "failed to chmod '$dir'"
 }
 
 lns() {
-	local target="$1" link="$2"
+    local target="$1" link="$2"
 
-	[[ -e "$link" && ! -L "$link" ]] && die "refusing to replace '$link'"
-	ln -sfn "$target" "link" || die "failed to link '$link'"
+    [[ -e "$link" && ! -L "$link" ]] && die "refusing to replace '$link'"
+    ln -sfn "$target" "$link" || die "failed to link '$link'"
 }
 
 write_file() {

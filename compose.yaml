@@ -1,4 +1,4 @@
-service:
+services:
   core-build:
     build:
       context: .
