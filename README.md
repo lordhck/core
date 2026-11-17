@@ -10,6 +10,14 @@ A minimal Linux distribution built from the ground up.
 make
 ```
 
+## Run
+
+```bash
+make run
+```
+
+Log in as `root` without a password. Quit QEMU with `Ctrl-A X`.
+
 ## Chroot
 
 ```bash
