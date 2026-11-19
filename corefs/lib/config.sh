@@ -49,9 +49,11 @@ EOT
     write_file "$ROOT/etc/inittab" <<'EOT'
 ::sysinit:/bin/mount -a
 ::sysinit:/bin/hostname -F /etc/hostname
+::sysinit:/sbin/syslogd
+::sysinit:/sbin/klogd
 ::sysinit:/bin/sh -c 'xargs modprobe -a < /etc/modules'
 ::sysinit:/sbin/ifup -a
-ttyS0::respawn:/sbin/getty -L 115200 ttyS0 vt100
+ttyS0::respawn:/sbin/getty -L -I '\033[H\033[2J' 115200 ttyS0 vt100
 EOT
 
     write_file "$ROOT/etc/network/interfaces" <<'EOT'
