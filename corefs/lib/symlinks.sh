@@ -12,7 +12,5 @@ build_symlinks() {
 
     lns /proc/self/mounts "$ROOT/etc/mtab"
 
-    lns sbin/init "$ROOT/init"
-
     ok
 }

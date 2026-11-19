@@ -59,6 +59,8 @@ EOT
 ::sysinit:/bin/sh -c 'xargs modprobe -a < /etc/modules'
 ::sysinit:/sbin/ifup -a
 ttyS0::respawn:/sbin/getty -L -I '\033[H\033[2J' 115200 ttyS0 vt100
+::shutdown:/sbin/killall5 -15
+::shutdown:/bin/sleep 1
 ::shutdown:/sbin/swapoff -a
 ::shutdown:/bin/umount -a -r
 EOT

@@ -3,6 +3,7 @@ FROM alpine:${ALPINE_VERSION}
 
 RUN apk add --no-cache \
 	bash \
+	e2fsprogs \
 	pax-utils \
 	tar
 

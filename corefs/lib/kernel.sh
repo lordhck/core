@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 KERNEL_PACKAGE=linux-virt
-KERNEL_MODULES=(virtio_net af_packet)
+KERNEL_MODULES=(virtio_net af_packet virtio_blk crc32c_generic ext4)
 BOOT_DIR="$PROJECT_DIR/output/boot"
 
 # The full module tree is ~28M, so only the modules listed above and

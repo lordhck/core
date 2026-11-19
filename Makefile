@@ -2,8 +2,8 @@ SHELL := /bin/bash
 
 .PHONY: build shell chroot run clean help
 
-build: ## Build the rootfs and initramfs
-	docker compose run --rm core-build ./corefs/build.sh
+build: ## Build the rootfs, initramfs and disk image
+	docker compose run --rm --build core-build ./corefs/build.sh
 
 shell: ## Open a shell in the build container
 	docker compose run --rm core-build
@@ -14,6 +14,7 @@ chroot: ## Chroot into the rootfs (sudo)
 run: ## Boot Core in QEMU
 	qemu-system-x86_64 -enable-kvm -m 512M -nographic \
 		-nic user,model=virtio-net-pci \
+		-drive file=output/disk.img,format=raw,if=virtio \
 		-kernel output/boot/vmlinuz-virt \
 		-initrd output/initramfs.cpio.gz \
 		-append console=ttyS0
