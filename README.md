@@ -24,6 +24,15 @@ make run
 
 Log in as `root` without a password. Quit QEMU with `Ctrl-A X`.
 
+The VM gets network through QEMU user-mode networking. `ping` only works
+if the host allows unprivileged ICMP:
+
+```bash
+sudo sysctl -w net.ipv4.ping_group_range="0 2147483647"
+```
+
+Run `make help` for all targets.
+
 ## Chroot
 
 ```bash
@@ -34,14 +43,15 @@ make chroot
 
 Currently in the bootstrap phase. Alpine is temporarily used as a build environment and as the source of binary packages and the kernel.
 
-Core boots in QEMU to a login prompt.
+Core boots in QEMU to a login prompt, with networking (DHCP) and system
+logging (`/var/log/messages`).
 
 The long-term goal is a self-hosting Linux distribution.
 
 ## Roadmap
 
-- [ ] Rootfs builder
-- [ ] Init and boot
+- [x] Rootfs builder
+- [x] Init and boot
 - [ ] Base system and networking
 - [ ] Package manager
 - [ ] Self-hosting
