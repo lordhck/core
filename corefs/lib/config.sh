@@ -40,13 +40,18 @@ root::0:0:99999:7:::
 EOT
 
     write_file "$ROOT/etc/fstab" <<'EOT'
-proc     /proc proc     defaults 0 0
-sysfs    /sys  sysfs    defaults 0 0
-devtmpfs /dev  devtmpfs defaults 0 0
-tmpfs    /run  tmpfs    defaults 0 0
+proc     /proc     proc     defaults               0 0
+sysfs    /sys      sysfs    defaults               0 0
+devtmpfs /dev      devtmpfs defaults               0 0
+devpts   /dev/pts  devpts   gid=5,mode=620         0 0
+tmpfs    /dev/shm  tmpfs    mode=1777,nosuid,nodev 0 0
+tmpfs    /run      tmpfs    defaults               0 0
 EOT
 
+    # /dev/pts and /dev/shm only exist once devtmpfs is mounted.
     write_file "$ROOT/etc/inittab" <<'EOT'
+::sysinit:/bin/mount /dev
+::sysinit:/bin/mkdir -p /dev/pts /dev/shm
 ::sysinit:/bin/mount -a
 ::sysinit:/bin/hostname -F /etc/hostname
 ::sysinit:/sbin/syslogd
@@ -54,6 +59,8 @@ EOT
 ::sysinit:/bin/sh -c 'xargs modprobe -a < /etc/modules'
 ::sysinit:/sbin/ifup -a
 ttyS0::respawn:/sbin/getty -L -I '\033[H\033[2J' 115200 ttyS0 vt100
+::shutdown:/sbin/swapoff -a
+::shutdown:/bin/umount -a -r
 EOT
 
     write_file "$ROOT/etc/network/interfaces" <<'EOT'
