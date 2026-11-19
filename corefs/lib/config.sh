@@ -49,7 +49,17 @@ EOT
     write_file "$ROOT/etc/inittab" <<'EOT'
 ::sysinit:/bin/mount -a
 ::sysinit:/bin/hostname -F /etc/hostname
+::sysinit:/bin/sh -c 'xargs modprobe -a < /etc/modules'
+::sysinit:/sbin/ifup -a
 ttyS0::respawn:/sbin/getty -L 115200 ttyS0 vt100
+EOT
+
+    write_file "$ROOT/etc/network/interfaces" <<'EOT'
+auto lo
+iface lo inet loopback
+
+auto eth0
+iface eth0 inet dhcp
 EOT
 
     write_file "$ROOT/etc/profile" <<'EOT'

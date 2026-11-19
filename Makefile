@@ -11,6 +11,7 @@ chroot:
 
 run:
 	qemu-system-x86_64 -enable-kvm -m 512M -nographic \
+		-nic user,model=virtio-net-pci \
 		-kernel output/boot/vmlinuz-virt \
 		-initrd output/initramfs.cpio.gz \
 		-append console=ttyS0
