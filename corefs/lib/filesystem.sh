@@ -5,6 +5,16 @@ build_filesystem() {
 
     status "Creating filesystem"
 
+    # Written first: build.sh only wipes a rootfs that has it, so even
+    # a failed build can be cleaned by the next one.
+    write_file "$ROOT/etc/os-release" <<'EOT'
+NAME="Core Linux"
+ID=core
+PRETTY_NAME="Core Linux"
+VERSION="0.1.0"
+VERSION_ID="0.1.0"
+EOT
+
     for dir in boot dev etc home mnt opt proc run srv sys \
                usr/{bin,include,lib,libexec,sbin,share} \
                var/{cache,lib,log,spool}; do
@@ -17,9 +27,7 @@ build_filesystem() {
     mkd "$ROOT/run/lock"
 
     # init needs a console before devtmpfs is mounted.
-    if [[ ! -c "$ROOT/dev/console" ]]; then
-        mknod -m 600 "$ROOT/dev/console" c 5 1 || die "failed to create /dev/console"
-    fi
+    mknod -m 600 "$ROOT/dev/console" c 5 1 || die "failed to create /dev/console"
 
     ok
 }

@@ -28,6 +28,13 @@ main() {
         mountpoint -q "$ROOT/$dir" && die "/$dir is mounted, exit the chroot first"
     done
 
+    # ROOT can come from the environment, so only ever wipe an old Core rootfs.
+    if [[ -n "$(ls -A "$ROOT")" ]] && ! grep -qx 'ID=core' "$ROOT/etc/os-release" 2>/dev/null; then
+        die "$ROOT is not empty and not a Core rootfs, refusing to delete it"
+    fi
+    rm -rf "$ROOT" || die "failed to clean rootfs"
+    mkdir -p "$ROOT" || die "failed to create rootfs"
+
     msg "Building Core rootfs in $ROOT"
 
     build_filesystem

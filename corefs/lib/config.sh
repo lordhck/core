@@ -3,21 +3,13 @@
 build_config() {
     status "Writing system configuration"
 
-    write_file "$ROOT/etc/os-release" <<'EOT'
-NAME="Core Linux"
-ID=core
-PRETTY_NAME="Core Linux"
-VERSION="0.1.0"
-VERSION_ID="0.1.0"
-EOT
-
     write_file "$ROOT/etc/hostname" <<'EOT'
 core
 EOT
 
     write_file "$ROOT/etc/hosts" <<'EOT'
 127.0.0.1 localhost
-127.0.0.1 core
+127.0.1.1 core
 ::1 localhost
 EOT
 
