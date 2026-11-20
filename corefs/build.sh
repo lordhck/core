@@ -14,7 +14,6 @@ source "$SCRIPT_DIR/lib/config.sh"
 source "$SCRIPT_DIR/lib/packages.sh"
 source "$SCRIPT_DIR/lib/kernel.sh"
 source "$SCRIPT_DIR/lib/verify.sh"
-source "$SCRIPT_DIR/lib/initramfs.sh"
 
 main() {
     [[ -n "$ROOT" && "$ROOT" != "/" ]] || die "invalid rootfs path"
@@ -37,7 +36,6 @@ main() {
     build_kernel
     build_config
     verify_elf
-    build_initramfs
 
     msg "Core rootfs built in ${SECONDS}s"
 }

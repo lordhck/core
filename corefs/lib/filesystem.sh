@@ -16,5 +16,10 @@ build_filesystem() {
     mkd "$ROOT/var/tmp"  1777
     mkd "$ROOT/run/lock"
 
+    # init needs a console before devtmpfs is mounted.
+    if [[ ! -c "$ROOT/dev/console" ]]; then
+        mknod -m 600 "$ROOT/dev/console" c 5 1 || die "failed to create /dev/console"
+    fi
+
     ok
 }

@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+
+set -Eeuo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
+
+source "$PROJECT_DIR/corefs/lib/common.sh"
+
+[[ $# -eq 3 ]] || die "usage: mkinitfs <rootfs> <kernel version> <output>"
+
+root="$1" kver="$2"
+moddir="$root/lib/modules/$kver"
+# Packing runs from the staging dir, so the output path must be absolute.
+output="$(cd "$(dirname "$3")" && pwd)/$(basename "$3")"
+
+[[ -x "$root/usr/bin/busybox.static" ]] || die "busybox.static not found in rootfs"
+[[ -f "$moddir/modules.dep" ]] || die "no modules for kernel $kver"
+
+status "Packing initramfs"
+
+tmp="$(mktemp -d)"
+trap 'rm -rf "$tmp"' EXIT
+
+mkdir -p "$tmp"/{bin,dev,etc,mnt,proc,"lib/modules/$kver"}
+mknod -m 600 "$tmp/dev/console" c 5 1
+install -m 755 "$root/usr/bin/busybox.static" "$tmp/bin/busybox"
+install -m 755 "$SCRIPT_DIR/init" "$tmp/init"
+sed '/^[[:space:]]*#/d; /^[[:space:]]*$/d' "$SCRIPT_DIR/modules" > "$tmp/etc/modules"
+
+mapfile -t modules < "$tmp/etc/modules"
+for module in "${modules[@]}"; do
+    grep -q "/$module\.ko[^:]*:" "$moddir/modules.dep" || die "module '$module' not found"
+done
+
+# modules.dep lists each module's full dependency chain.
+mapfile -t files < <(
+    awk -v want=" ${modules[*]} " '{
+        sub(":", "", $1)
+        name = $1; sub(/.*\//, "", name); sub(/\.ko.*/, "", name)
+        if (index(want, " " name " ")) for (i = 1; i <= NF; i++) print $i
+    }' "$moddir/modules.dep" | sort -u
+)
+
+tar -C "$moddir" -cf - modules.dep "${files[@]}" | tar -C "$tmp/lib/modules/$kver" -xf - \
+    || die "failed to copy kernel modules"
+
+out="$( { cd "$tmp" && find . | cpio -o -H newc | gzip > "$output"; } 2>&1 )" \
+    || die "failed to pack initramfs" "$out"
+
+ok "$(du -h "$output" | cut -f1), ${#files[@]} modules"

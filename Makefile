@@ -3,8 +3,10 @@ SHELL := /bin/bash
 .PHONY: build shell chroot run clean help
 
 build: ## Build the rootfs, initramfs and disk image
-	docker compose run --rm --build core-build \
-		bash -c "./corefs/build.sh && ./scripts/mkdisk output/rootfs output/disk.img"
+	docker compose run --rm --build core-build bash -c '\
+		./corefs/build.sh && \
+		./mkinitfs/mkinitfs output/rootfs "$$(ls output/rootfs/lib/modules)" output/initramfs.cpio.gz && \
+		./scripts/mkdisk output/rootfs output/disk.img'
 
 shell: ## Open a shell in the build container
 	docker compose run --rm core-build
