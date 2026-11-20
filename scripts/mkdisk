@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+set -Eeuo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
+
+source "$PROJECT_DIR/corefs/lib/common.sh"
+
+[[ $# -ge 2 ]] || die "usage: mkdisk <rootfs> <image> [size]"
+
+root="$1" image="$2" size="${3:-1G}"
+
+[[ -d "$root" ]] || die "rootfs directory not found"
+
+status "Creating disk image"
+
+# mke2fs -d fills the filesystem from a directory, so no loop mount
+# or root on the host is needed.
+rm -f "$image" || die "failed to remove old disk image"
+out="$(mke2fs -q -t ext4 -L core -d "$root" "$image" "$size" 2>&1)" \
+    || die "failed to create disk image" "$out"
+
+# The container runs as root; QEMU on the host needs write access.
+chown "$(stat -c %u:%g "$PROJECT_DIR")" "$image" || die "failed to chown disk image"
+
+ok "$size ext4"
