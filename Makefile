@@ -15,6 +15,8 @@ chroot: ## Chroot into the rootfs (sudo)
 	sudo ./scripts/chroot
 
 run: ## Boot Core in QEMU
+	@for f in output/disk.img output/initramfs.cpio.gz output/boot/vmlinuz-virt; do \
+		[[ -f $$f ]] || { echo "$$f not found, run 'make build' first" >&2; exit 1; }; done
 	qemu-system-x86_64 -enable-kvm -m 512M -nographic \
 		-nic user,model=virtio-net-pci \
 		-drive file=output/disk.img,format=raw,if=virtio \

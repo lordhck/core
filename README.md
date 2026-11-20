@@ -16,6 +16,12 @@ A minimal Linux distribution built from the ground up.
 make
 ```
 
+This runs three tools in the build container:
+
+- `corefs` builds the rootfs
+- `mkinitfs` builds a minimal initramfs that mounts the disk
+- `mkdisk` packs the rootfs into an ext4 disk image
+
 ## Run
 
 ```bash
