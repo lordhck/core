@@ -3,24 +3,25 @@ SHELL := /bin/bash
 .PHONY: build shell chroot run clean help
 
 build: ## Build the rootfs, initramfs and disk image
+	$(MAKE) -C install-scripts
 	docker compose run --rm --build core-build bash -c '\
-		./corefs/build.sh && \
-		./mkinitfs/mkinitfs output/rootfs "$$(ls output/rootfs/lib/modules)" output/initramfs.cpio.gz && \
+		install-scripts/bin/corefs install base output/rootfs && \
+		install-scripts/bin/mkinitfs output/rootfs "$$(ls output/rootfs/lib/modules)" output/initramfs.cpio.gz && \
 		./scripts/mkdisk output/rootfs output/disk.img'
 
 shell: ## Open a shell in the build container
 	docker compose run --rm core-build
 
 chroot: ## Chroot into the rootfs (sudo)
-	sudo ./scripts/chroot
+	sudo ./install-scripts/bin/core-chroot output/rootfs
 
 run: ## Boot Core in QEMU
-	@for f in output/disk.img output/initramfs.cpio.gz output/boot/vmlinuz-virt; do \
+	@for f in output/disk.img output/initramfs.cpio.gz output/rootfs/boot/vmlinuz-virt; do \
 		[[ -f $$f ]] || { echo "$$f not found, run 'make build' first" >&2; exit 1; }; done
 	qemu-system-x86_64 -enable-kvm -m 512M -nographic \
 		-nic user,model=virtio-net-pci \
 		-drive file=output/disk.img,format=raw,if=virtio \
-		-kernel output/boot/vmlinuz-virt \
+		-kernel output/rootfs/boot/vmlinuz-virt \
 		-initrd output/initramfs.cpio.gz \
 		-append console=ttyS0
 

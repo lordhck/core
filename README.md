@@ -7,20 +7,25 @@ A minimal Linux distribution built from the ground up.
 ## Requirements
 
 - Docker with Compose
-- make
+- make and m4
 - QEMU (`qemu-system-x86_64`) with KVM access, for `make run`
 
 ## Build
 
 ```bash
+git clone --recursive https://github.com/lordhck/core
+cd core
 make
 ```
 
-This runs three tools in the build container:
+In an existing clone, run `git submodule update --init` first.
 
-- `corefs` builds the rootfs
+This builds [install-scripts](https://github.com/lordhck/install-scripts)
+and runs its tools in the build container:
+
+- `corefs install base` builds the rootfs
 - `mkinitfs` builds a minimal initramfs that mounts the disk
-- `mkdisk` packs the rootfs into an ext4 disk image
+- `scripts/mkdisk` packs the rootfs into an ext4 disk image
 
 ## Run
 

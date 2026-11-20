@@ -1,5 +1,0 @@
-virtio_blk
-ext4
-# ext4 needs crc32c, which is not in modules.dep.
-crc32c_generic
-

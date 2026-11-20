@@ -5,9 +5,12 @@ set -Eeuo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 
-source "$PROJECT_DIR/corefs/lib/common.sh"
+source "$PROJECT_DIR/install-scripts/src/lib/common.m4"
 
-[[ $# -ge 2 ]] || die "usage: mkdisk <rootfs> <image> [size]"
+if [[ $# -lt 2 ]]; then
+    echo "usage: mkdisk <rootfs> <image> [size]" >&2
+    exit 1
+fi
 
 root="$1" image="$2" size="${3:-1G}"
 
