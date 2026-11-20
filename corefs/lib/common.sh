@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 
 if [[ -t 1 ]]; then
-    RED=$'\e[31m' GREEN=$'\e[32m' YELLOW=$'\e[33m' BLUE=$'\e[34m'
+    RED=$'\e[31m' GREEN=$'\e[32m' YELLOW=$'\e[33m'
     BOLD=$'\e[1m' DIM=$'\e[2m' RESET=$'\e[0m' CR=$'\r'
 else
-    RED='' GREEN='' YELLOW='' BLUE='' BOLD='' DIM='' RESET='' CR=''
+    RED='' GREEN='' YELLOW='' BOLD='' DIM='' RESET='' CR=''
 fi
 
 STEP=''
 
-msg() { printf '\n%s==>%s %s%s%s\n' "$BLUE" "$RESET" "$BOLD" "$*" "$RESET"; }
+msg() { printf '\n%s==> %s%s\n' "$BOLD" "$*" "$RESET"; }
 
 # The pending line is redrawn by ok/die. Without a terminal it is
 # skipped, so logs only get the final result.
