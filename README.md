@@ -61,8 +61,8 @@ The long-term goal is a self-hosting Linux distribution.
 
 - [x] Rootfs builder
 - [x] Init and boot
-- [ ] Base system and networking
-- [ ] Package manager
+- [x] Base system and networking
+- [ ] `core` dispatcher (`add` / `del`)
 - [ ] Self-hosting
 - [ ] Installable distribution
 
