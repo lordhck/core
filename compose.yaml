@@ -1,0 +1,10 @@
+services:
+  core-build:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    image: core-build
+    volumes:
+      - .:/core-build
+    stdin_open: true
+    tty: true
