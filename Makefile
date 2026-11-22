@@ -1,0 +1,30 @@
+SHELL := /bin/bash
+
+.PHONY: build run clean help
+
+build: ## build the rootfs, initramfs and disk image
+	docker compose run --rm --build core-build bash -c \
+		'scripts/build.sh && scripts/cpio.sh && scripts/disk.sh'
+
+run: ## boot core in qemu
+	@for f in output/disk.img output/initramfs.cpio.gz output/rootfs/boot/vmlinuz-virt; do \
+		[[ -f $$f ]] || { echo "$$f not found, run 'make build' first" >&2; exit 1; }; done
+	qemu-system-x86_64 -enable-kvm -m 512M -nographic \
+		-nic user,model=virtio-net-pci \
+		-drive file=output/disk.img,format=raw,if=virtio \
+		-kernel output/rootfs/boot/vmlinuz-virt \
+		-initrd output/initramfs.cpio.gz \
+		-append console=ttyS0
+
+clean: ## remove the build output
+	sudo rm -rf output
+
+help: ## show this help
+	@if [[ -t 1 && -z "$${NO_COLOR:-}" ]]; then \
+		B=$$'\033[38;2;122;162;247m' H=$$'\033[1m' R=$$'\033[0m'; \
+	else B= H= R=; fi; \
+	printf '%score%s - A minimal Linux distribution\n\n' "$$H" "$$R"; \
+	printf 'Usage: make %s<target>%s\n\n' "$$B" "$$R"; \
+	printf '%sTargets%s\n' "$$H" "$$R"; \
+	grep -hE '^[a-zA-Z0-9_.-]+:.*## ' $(MAKEFILE_LIST) | while IFS= read -r l; do \
+		printf '  %s%-12s%s %s\n' "$$B" "$${l%%:*}" "$$R" "$${l#*## }"; done
